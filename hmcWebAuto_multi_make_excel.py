@@ -29,7 +29,7 @@ def make_excel():
 
     options = webdriver.ChromeOptions()
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
-    browser = webdriver.Chrome(options=options)
+    browser = webdriver.Chrome("./Chrome_Driver/Mac_OS/chromedriver_95.0.4638.69", options=options)
         
     hmc_url = "https://devhmc.hanwhalife.com:1080/sfa/incomeHmc?etrDvCd=01&token=aa2cb27ab1d84482aced7b5ee21c798f&sfaCmpnDvsn=01&mobUserPrno="+sabun+"&mobUserDvsn=02&offcCode=00000" #HMC QA 테스트 URL
     browser.get(hmc_url) #HMC QA 테스트 URL
@@ -61,7 +61,7 @@ def make_excel():
         goodName.append(e1.text)
         count = count + 1
 
-    wb = load_workbook("testCase_multi.xlsx") #testCase1.xlsx 파일에서 wb를 불러옴
+    wb = load_workbook("./testCase_multi.xlsx") #testCase1.xlsx 파일에서 wb를 불러옴
     ws = wb.active  # 현재 활성화된 sheet 가져옴
 
     k=1
@@ -153,7 +153,9 @@ def make_excel():
                 j = j+3
 
         try:
-            result = browser.execute_script("return document.querySelector('#chk01').checked") #주피 건강체 가져오기
+            #result = browser.execute_script("return document.querySelector('#chk01').checked") #주피 건강체 가져오기
+            resultElem = browser.find_element_by_xpath('//*[@id="chk01"]') #주피 건강체 가져오기
+            result = resultElem.is_selected()
             if result:
                 ws.cell(row=i,column=26).value = "Y" 
             else:
@@ -170,7 +172,9 @@ def make_excel():
         j=0
         for l in range(2,5):
             if birth[l]:  #종피1,2,3 생년월일이 존재하면
-                result = browser.execute_script("return document.querySelector('#man0"+str(l)+"').checked") #종피1,2,3 성별 가져오기
+                #result = browser.execute_script("return document.querySelector('#man0"+str(l)+"').checked") #종피1,2,3 성별 가져오기
+                resultElem = browser.find_element_by_xpath('//*[@id="man0' + str(l) + '"]') #종피1,2,3 성별 가져오기
+                result = resultElem.is_selected()
                 if result:
                     ws.cell(row=i,column=13+j).value = "남" #종피1,2,3 성별
                 else:
@@ -178,7 +182,7 @@ def make_excel():
             else:
                 ws.cell(row=i,column=13+j).value = "" #종피1,2,3 성별
                 ws.cell(row=i,column=14+j).value = "" #종피1,2,3 직종
-            l = l+1
+            #l = l+1
             j = j+3
 
         time.sleep(0.5)
@@ -199,7 +203,9 @@ def make_excel():
         browser.find_element_by_xpath("/html/body/div[2]/div[1]/footer/div/button").click()        #적용하기 클릭
         time.sleep(3)
 
-        result = browser.execute_script("return document.querySelector('#plan01').checked") #주계약 가입금액 체크여부
+        # result = browser.execute_script("return document.querySelector('#plan01').checked") #주계약 가입금액 체크여부
+        resultElem = browser.find_element_by_xpath('//*[@id="plan01"]') #주계약 가입금액 체크여부
+        result = resultElem.is_selected()
         if result:
             if "연금" in goodName[k-1]:
                 ws.cell(row=i,column=28).value = "주계약보험료"
@@ -240,13 +246,17 @@ def make_excel():
             pass
         
         try:
-            result = browser.execute_script("return document.querySelector('#chk02').checked") #환급특약제외 체크여부
+            # result = browser.execute_script("return document.querySelector('#chk02').checked") #환급특약제외 체크여부
+            resultElem = browser.find_element_by_xpath('//*[@id="chk02"]') #환급특약제외 체크여부
+            result = resultElem.is_selected()
             if result:
                 ws.cell(row=i,column=47).value = "Y"
             else:
                 ws.cell(row=i,column=47).value = "N"
             
-            result = browser.execute_script("return document.querySelector('#chk01').checked") #납입면제특약제외 체크여부
+            # result = browser.execute_script("return document.querySelector('#chk01').checked") #납입면제특약제외 체크여부
+            result = browser.find_element_by_xpath('//*[@id="chk01"]') #납입면제특약제외 체크여부
+            result = resultElem.is_selected()
             if result:
                 ws.cell(row=i,column=48).value = "Y"
             else:
